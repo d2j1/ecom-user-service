@@ -1,2 +1,11 @@
-package com.app.userservice.repository;public class UserRepository {
+package com.app.userservice.repository;
+
+import com.app.userservice.models.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    User save(User user); // update + insert
+
+
 }
