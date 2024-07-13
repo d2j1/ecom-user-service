@@ -6,9 +6,13 @@ import com.app.userservice.dtos.SignUpRequestDto;
 import com.app.userservice.dtos.UserDto;
 import com.app.userservice.models.Token;
 import com.app.userservice.models.User;
+import com.app.userservice.repository.TokenRepository;
 import com.app.userservice.services.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -16,8 +20,10 @@ public class UserController {
 
     private final UserService userService;
 
+
     public UserController(UserService userService) {
         this.userService = userService;
+
     }
 
     @PostMapping("/signup")
@@ -42,15 +48,16 @@ public Token login(@RequestBody LoginRequestDto loginDto){
 
 @PostMapping("/logout")
 public ResponseEntity<Void>  logOut(@RequestBody LogOutRequestDto logoutDto){
-
-        return null;
+        userService.logout(logoutDto.getToken());
+        return new ResponseEntity<>(HttpStatus.OK);
 }
 
 @PostMapping("/validate/{token}")
 public UserDto validateToken(@PathVariable String token){
 
-        return null;
-}
+        return UserDto.from(userService.validateToken(token));
+
+    }
 
 @GetMapping("/user/{id}")
     public UserDto getUser(@PathVariable long id){

@@ -5,13 +5,14 @@ import com.app.userservice.models.User;
 import com.app.userservice.repository.TokenRepository;
 import com.app.userservice.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
+
 import java.util.Date;
 import java.util.Optional;
 
@@ -56,9 +57,8 @@ private UserRepository  userRepository;
 
         if( !encoder.matches(password, user.getHashedPassword()))
         {
-            // return null tokem
+            throw new BadCredentialsException("Wrong password : "+user.getHashedPassword());
 
-            return null;
 
         }
             // login successful
@@ -88,11 +88,33 @@ private UserRepository  userRepository;
         return token;
 
     }
-    public void logout(String token){
+
+    public void logout(String tokenStr){
+
+        Optional<Token> optionalToken = tokenRepository.findByTokenAndDeleted(tokenStr, false);
+        if(optionalToken.isEmpty()){
+            // throw new exception
+            return;
+        }
+
+        Token token = optionalToken.get();
+
+        token.setDeleted(true);
+        tokenRepository.save(token);
 
     }
 
     public User validateToken(String token){
-        return null;
+
+        Optional<Token> optionalToken = tokenRepository.findByTokenAndDeletedAndExpiryAtGreaterThan(token, false, new Date());
+// select * from tokens where token = token and deleted = false and expiryAt > currentDate
+        if(optionalToken.isEmpty()){
+
+            return null;
+        }
+
+
+        return optionalToken.get().getUser();
+
     }
 }
