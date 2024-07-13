@@ -34,7 +34,10 @@ public UserDto signUp(@RequestBody SignUpRequestDto requestDto){
 
 @PostMapping("/login")
 public Token login(@RequestBody LoginRequestDto loginDto){
-        return null;
+
+        Token token = userService.login(loginDto.getEmail(), loginDto.getPassword());
+
+        return token;
 }
 
 @PostMapping("/logout")
