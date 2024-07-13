@@ -52,8 +52,10 @@ public ResponseEntity<Void>  logOut(@RequestBody LogOutRequestDto logoutDto){
         return new ResponseEntity<>(HttpStatus.OK);
 }
 
-@PostMapping("/validate/{token}")
+@GetMapping("/validate/{token}")
 public UserDto validateToken(@PathVariable String token){
+
+//        System.out.println("Validate token has been called for token "+  token);
 
         return UserDto.from(userService.validateToken(token));
 
